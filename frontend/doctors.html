@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Doctors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+
+        .container {
+            max-width: 1000px; /* Increased max-width */
+            margin: 2rem auto; /* Added margin for spacing */
+            padding: 1.5rem;
+            background-color: #fff;
+            border-radius: 0.5rem; /* Rounded corners */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); /* Shadow */
+        }
+
+        .heading {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #4f46e5; /* indigo-600 */
+            text-align: center;
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scrolling for small screens */
+            margin-bottom: 1.5rem;
+        }
+
+        .doctors-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border: 1px solid #e5e7eb; /* Gray border */
+            border-radius: 0.5rem;
+            overflow: hidden;  /* needed for rounded corners and border */
+        }
+
+        .doctors-table thead th {
+            background-color: #f9fafb; /* Light gray header background */
+            color: #374151; /* Darker text */
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            text-align: left;
+            font-weight: 600; /* font-semibold */
+            border-bottom: 2px solid #e5e7eb; /* Bottom border for header */
+        }
+
+        .doctors-table tbody tr:nth-child(odd) {
+            background-color: #fff; /* White for odd rows */
+        }
+
+        .doctors-table tbody tr:nth-child(even) {
+            background-color: #f7fafc; /* Slightly darker for even rows */
+        }
+
+        .doctors-table tbody td {
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            border-bottom: 1px solid #e5e7eb; /* Bottom border for rows */
+        }
+
+        .doctors-table tbody tr:last-child td {
+            border-bottom: none; /* No border for the last row */
+        }
+
+        .doctors-table tbody td a {
+            color: #4f46e5; /* Indigo color for links */
+            text-decoration: none;
+            transition: color 0.2s ease; /* Smooth transition */
+        }
+
+        .doctors-table tbody td a:hover {
+            color: #6d28d9; /* Darker indigo on hover */
+        }
+
+        .message-container {
+            text-align: center;
+            margin-top: 1rem;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            .heading {
+                font-size: 2rem; /* Adjusted heading size for smaller screens */
+            }
+            .container {
+                padding: 1rem;
+            }
+            .doctors-table thead {
+                display: none; /* Hide thead on small screens */
+            }
+            .doctors-table tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+            }
+            .doctors-table tbody td {
+                display: block;
+                padding: 0.5rem 0;
+                border-bottom: none;
+            }
+            .doctors-table tbody td:before {
+                content: attr(data-label) ": "; /* Show label before data */
+                font-weight: 600;
+                color: #374151;
+                display: inline-block;
+                width: 120px; /* Adjust as needed */
+            }
+            .doctors-table tbody td:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="heading">Registered Doctors</h2>
+        <div class="table-container">
+            <table class="doctors-table">
+                <thead>
+                    <tr>
+                        <th>Doctor Name</th>
+                        <th>Hospital</th>
+                        <th>Hospital Address</th>
+                        <th>Contact Number</th>
+                        <th>Email</th>
+                        <th>Specialization</th>
+                        <th>Registration ID</th>
+                        <th>Years of Experience</th>
+                    </tr>
+                </thead>
+                <tbody id="doctors-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const doctorsTableBody = document.getElementById('doctors-table-body');
+        const messageContainer = document.getElementById('message-container');
+        const backendUrl = 'http://localhost:8000';
+
+        async function fetchDoctors() {
+            try {
+                const response = await fetch(`${backendUrl}/doctors/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    doctorsTableBody.innerHTML = ''; 
+                    data.forEach(doctor => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td data-label="Doctor Name">${doctor.doctor_name}</td>
+                            <td data-label="Hospital">${doctor.hospital || '-'}</td>
+                            <td data-label="Hospital Address">${doctor.hospital_address || '-'}</td>
+                            <td data-label="Contact Number">${doctor.contact_number || '-'}</td>
+                            <td data-label="Email">${doctor.email || '-'}</td>
+                            <td data-label="Specialization">${doctor.specialization || '-'}</td>
+                            <td data-label="Registration ID">${doctor.registration_id}</td>
+                            <td data-label="Years of Experience">${doctor.years_of_experience || '-'}</td>
+                        `;
+                        doctorsTableBody.appendChild(row);
+                    });
+                } else {
+                    messageContainer.textContent = 'No doctors found.';
+                }
+            } catch (error) {
+                console.error('Error fetching doctors:', error);
+                messageContainer.textContent = 'Failed to fetch doctors. Please check the console.';
+            }
+        }
+
+        fetchDoctors();
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Tone Classification</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { margin-bottom: 20px; }
+        .patient-selection { margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; }
+        .patient-selection label { margin-bottom: 5px; }
+        .patient-selection select { width: 250px; }
+        .image-grid-container { margin-bottom: 20px; }
+        .image-pair { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .image-pair img { max-width: 200px; height: auto; border: 1px solid #ddd; border-radius: 5px; }
+        .classification-form { display: flex; flex-direction: column; align-items: center; }
+        .fitzpatrick-guide { max-width: 600px; margin-top: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
+        label { margin-bottom: 10px; font-weight: bold; text-align: center; }
+        select { padding: 8px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ccc; width: 200px; }
+        button { background-color: #551A8B; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #440077; }
+        #message-container, #error-container { margin-top: 15px; font-weight: bold; text-align: center; }
+        #error-container { color: red; }
+        .no-mask { font-style: italic; color: gray; }
+    </style>
+</head>
+<body>
+    <h1>Skin Tone Classification</h1>
+
+    <div class="patient-selection">
+        <label for="patient-select">Select Patient (Persona ID):</label>
+        <select id="patient-select">
+            <option value="">-- Select Patient --</option>
+        </select>
+    </div>
+
+    <div class="image-grid-container" id="patient-images-grid"></div>
+
+    <div class="classification-form" id="classification-form" style="display: none;">
+        <label for="fitzpatrick-scale">How do you classify the skin tone of this patient according to the Fitzpatrick scale?</label>
+        <img src="http://localhost:8000/images/fitzpatrick.jpg" alt="Fitzpatrick Scale Guide" class="fitzpatrick-guide" />
+        <select id="fitzpatrick-scale" name="fitzpatrick_scale">
+            <option value="Type I">Type I</option>
+            <option value="Type II">Type II</option>
+            <option value="Type III">Type III</option>
+            <option value="Type IV">Type IV</option>
+            <option value="Type V">Type V</option>
+            <option value="Type VI">Type VI</option>
+        </select>
+        <button id="classify-button">Classify Skin Tone</button>
+        <div id="message-container"></div>
+        <div id="error-container"></div>
+    </div>
+
+    <a href="/" class="home-button" style="display: block; margin-top: 20px; text-align: center; padding: 10px; background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; width: 100px;">Home</a>
+
+    <script>
+        const patientSelect = document.getElementById('patient-select');
+        const patientImagesGrid = document.getElementById('patient-images-grid');
+        const classificationForm = document.getElementById('classification-form');
+        const fitzpatrickScaleSelect = document.getElementById('fitzpatrick-scale');
+        const classifyButton = document.getElementById('classify-button');
+        const messageContainer = document.getElementById('message-container');
+        const errorContainer = document.getElementById('error-container');
+        const backendUrl = 'http://localhost:8000';
+
+        let currentPatient = null;
+        let patientImages = [];
+
+        function loadUniquePatients() {
+            fetch(`${backendUrl}/unique_patients/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(patients => {
+                    patients.forEach(patient => {
+                        const option = document.createElement('option');
+                        option.value = patient;
+                        option.textContent = patient;
+                        patientSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading patients:', error);
+                    errorContainer.textContent = 'Failed to load patient list.';
+                });
+        }
+
+        function loadPatientImages(personaDigits) {
+            currentPatient = personaDigits;
+            patientImagesGrid.innerHTML = '';
+            classificationForm.style.display = 'none';
+            messageContainer.textContent = '';
+            errorContainer.textContent = '';
+
+            if (personaDigits) {
+                fetch(`${backendUrl}/patient_images/${personaDigits}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(images => {
+                        patientImages = images;
+                        if (images.length > 0) {
+                            images.forEach(image => {
+                                const imagePairDiv = document.createElement('div');
+                                imagePairDiv.classList.add('image-pair');
+
+                                const originalImg = document.createElement('img');
+                                originalImg.src = `${backendUrl}${image.image_path}`;
+                                originalImg.alt = image.image_name;
+                                imagePairDiv.appendChild(originalImg);
+
+                                if (image.mask_path) {
+                                    const maskImg = document.createElement('img');
+                                    maskImg.src = `${backendUrl}${image.mask_path}`;
+                                    maskImg.alt = image.mask_name;
+                                    imagePairDiv.appendChild(maskImg);
+                                } else {
+                                    const noMaskSpan = document.createElement('span');
+                                    noMaskSpan.classList.add('no-mask');
+                                    noMaskSpan.textContent = '(No Mask)';
+                                    imagePairDiv.appendChild(noMaskSpan);
+                                }
+
+                                patientImagesGrid.appendChild(imagePairDiv);
+                            });
+                            classificationForm.style.display = 'flex';
+                        } else {
+                            messageContainer.textContent = `No images found for patient ${personaDigits}.`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading patient images:', error);
+                        errorContainer.textContent = `Failed to load images for patient ${personaDigits}.`;
+                    });
+            }
+        }
+
+        patientSelect.addEventListener('change', () => {
+            const selectedPatient = patientSelect.value;
+            loadPatientImages(selectedPatient);
+        });
+
+        classifyButton.addEventListener('click', () => {
+            if (currentPatient) {
+                const selectedScale = fitzpatrickScaleSelect.value;
+                fetch(`${backendUrl}/classify_skin_tone/${currentPatient}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `fitzpatrick_scale=${selectedScale}`,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.detail || 'Failed to classify skin tone.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    messageContainer.textContent = data.message;
+                    errorContainer.textContent = '';
+                })
+                .catch(error => {
+                    console.error('Error classifying skin tone:', error);
+                    errorContainer.textContent = error.message;
+                    messageContainer.textContent = '';
+                });
+            } else {
+                errorContainer.textContent = 'Please select a patient first.';
+            }
+        });
+
+        // Load unique patients on page load
+        loadUniquePatients();
+    </script>
+</body>
+</html>

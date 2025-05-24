@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View/Edit Skin Disease Image Details</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { margin-bottom: 20px; }
+        .image-container { display: flex; justify-content: center; margin-bottom: 20px; gap: 20px; }
+        .image-container img { max-width: 300px; height: auto; border: 1px solid #ddd; border-radius: 5px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .data-table th { background-color: #f0f0f0; }
+        .editable { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .action-buttons { display: flex; gap: 5px; align-items: center; }
+        .pagination-buttons { margin-top: 20px; }
+        .pagination-buttons button { padding: 8px 15px; margin: 0 5px; cursor: pointer; }
+        #message-container, #error-container { margin-top: 10px; font-weight: bold; }
+        #error-container { color: red; }
+    </style>
+</head>
+<body>
+    <h1>View/Edit Skin Disease Image Details</h1>
+
+    <div class="image-container">
+        <div style="text-align: center;">
+            <img id="current-original-image" src="" alt="Original Image">
+            <p>Original Image</p>
+        </div>
+        <div style="text-align: center;">
+            <img id="current-mask-image" src="" alt="Mask Image">
+            <p>Mask Image</p>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Doctor's Name</th>
+                <th>Rating</th>
+                <th>Comments</th>
+                <th>Category</th>
+                <th>Years of Experience</th>
+                <th>Real/Generated</th>
+                <th>Realism Rating</th>
+                <th>Image Precision</th>
+                <th>Skin Color Precision</th>
+                <th>Confidence Level</th>
+                <th>Crop Quality Rating</th>
+                <th>Crop Diagnosis</th>
+                <th>Fitzpatrick Scale</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body">
+        </tbody>
+    </table>
+
+    <div class="pagination-buttons">
+        <button id="prev-button" disabled>Previous</button>
+        <span id="current-page">Page 1</span>
+        <button id="next-button" disabled>Next</button>
+    </div>
+
+    <div id="message-container"></div>
+    <div id="error-container"></div>
+
+    <a href="/" class="home-button" style="display: block; margin-top: 20px; text-align: center; padding: 10px; background-color: #f0f0f0; color: #333; border: 1px solid #ccc; border-radius: 5px; text-decoration: none; width: 100px;">Home</a>
+
+    <script>
+        const currentOriginalImage = document.getElementById('current-original-image');
+        const currentMaskImage = document.getElementById('current-mask-image');
+        const dataTableBody = document.getElementById('data-table-body');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const currentPageSpan = document.getElementById('current-page');
+        const messageContainer = document.getElementById('message-container');
+        const errorContainer = document.getElementById('error-container');
+        const backendUrl = 'http://localhost:8000';
+        const imagesPerPage = 1; // Show one image (and its details) per page
+
+        let allImages = [];
+        let currentPage = 1;
+
+        function updatePagination() {
+            const startIndex = (currentPage - 1) * imagesPerPage;
+            const endIndex = startIndex + imagesPerPage;
+            const currentImage = allImages[startIndex];
+
+            if (currentImage) {
+                currentOriginalImage.src = `${backendUrl}/${currentImage.image_path}`;
+                currentOriginalImage.alt = `Original Image ${currentImage.image_path}`;
+                currentMaskImage.src = currentImage.mask_path ? `${backendUrl}/${currentImage.mask_path}` : '';
+                currentMaskImage.alt = currentImage.mask_path ? `Mask Image ${currentImage.mask_path}` : 'No Mask';
+                populateTable(currentImage);
+            } else {
+                currentOriginalImage.src = '';
+                currentMaskImage.src = '';
+                dataTableBody.innerHTML = '<tr><td colspan="16">No image found for this page.</td></tr>';
+            }
+
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = endIndex >= allImages.length;
+            currentPageSpan.textContent = `Page ${currentPage} of ${Math.ceil(allImages.length / imagesPerPage)}`;
+        }
+
+        function populateTable(image) {
+            dataTableBody.innerHTML = '';
+            if (image) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${image.id}</td>
+                    <td><input type="text" value="${image.doctor_name || ''}" class="editable" data-field="doctor_name" data-id="${image.id}"></td>
+                    <td><input type="number" value="${image.rating || ''}" class="editable" data-field="rating" data-id="${image.id}" min="1" max="5"></td>
+                    <td><textarea class="editable" data-field="comments" data-id="${image.id}">${image.comments || ''}</textarea></td>
+                    <td>
+                        <select class="editable" data-field="category" data-id="${image.id}">
+                            <option value="" ${!image.category ? 'selected' : ''}>-- Select --</option>
+                            <option value="disease" ${image.category === 'disease' ? 'selected' : ''}>Disease</option>
+                            <option value="non-disease" ${image.category === 'non-disease' ? 'selected' : ''}>Non-Disease</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="${image.years_of_experience || ''}" class="editable" data-field="years_of_experience" data-id="${image.id}"></td>
+                    <td>
+                        <select class="editable" data-field="real_generated" data-id="${image.id}">
+                            <option value="" ${!image.real_generated ? 'selected' : ''}>-- Select --</option>
+                            <option value="real" ${image.real_generated === 'real' ? 'selected' : ''}>Real</option>
+                            <option value="generated" ${image.real_generated === 'generated' ? 'selected' : ''}>Generated</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="${image.realism_rating || ''}" class="editable" data-field="realism_rating" data-id="${image.id}"></td>
+                    <td><input type="text" value="${image.image_precision || ''}" class="editable" data-field="image_precision" data-id="${image.id}"></td>
+                    <td><input type="number" value="${image.skin_color_precision || ''}" class="editable" data-field="skin_color_precision" data-id="${image.id}"></td>
+                    <td><input type="number" value="${image.confidence_level || ''}" class="editable" data-field="confidence_level" data-id="${image.id}"></td>
+                    <td><input type="number" value="${image.crop_quality_rating || ''}" class="editable" data-field="crop_quality_rating" data-id="${image.id}"></td>
+                    <td><input type="text" value="${image.crop_diagnosis || ''}" class="editable" data-field="crop_diagnosis" data-id="${image.id}"></td>
+                    <td>
+                        <select class="editable" data-field="fitzpatrick_scale" data-id="${image.id}">
+                            <option value="" ${!image.fitzpatrick_scale ? 'selected' : ''}>-- Select --</option>
+                            <option value="Type I" ${image.fitzpatrick_scale === 'Type I' ? 'selected' : ''}>Type I</option>
+                            <option value="Type II" ${image.fitzpatrick_scale === 'Type II' ? 'selected' : ''}>Type II</option>
+                            <option value="Type III" ${image.fitzpatrick_scale === 'Type III' ? 'selected' : ''}>Type III</option>
+                            <option value="Type IV" ${image.fitzpatrick_scale === 'Type IV' ? 'selected' : ''}>Type IV</option>
+                            <option value="Type V" ${image.fitzpatrick_scale === 'Type V' ? 'selected' : ''}>Type V</option>
+                            <option value="Type VI" ${image.fitzpatrick_scale === 'Type VI' ? 'selected' : ''}>Type VI</option>
+                        </select>
+                    </td>
+                    <td>${new Date(image.created_at).toLocaleString()}</td>
+                    <td class="action-buttons">
+                        <button class="save-button" data-id="${image.id}">Save</button>
+                    </td>
+                `;
+                dataTableBody.appendChild(row);
+
+                const saveButtons = dataTableBody.querySelectorAll('.save-button');
+                saveButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const id = button.dataset.id;
+                        const updatedFields = {};
+                        const row = button.closest('tr');
+                        row.querySelectorAll('.editable[data-id="' + id + '"]').forEach(input => {
+                            updatedFields[input.dataset.field] = input.value;
+                        });
+
+                        fetch(`${backendUrl}/skin_disease_images/${id}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(updatedFields),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => {
+                                    throw new Error(err.detail || 'Failed to update image details');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            messageContainer.textContent = data.message;
+                            errorContainer.textContent = '';
+                            fetchImages(); // Refresh data
+                        })
+                        .catch(error => {
+                            console.error('Error updating image details:', error);
+                            errorContainer.textContent = error.message;
+                            messageContainer.textContent = '';
+                        });
+                    });
+                });
+            } else {
+                dataTableBody.innerHTML = '<tr><td colspan="16">No data available.</td></tr>';
+            }
+        }
+
+        function fetchImages() {
+            fetch(`${backendUrl}/skin_disease_images?page=${currentPage}&per_page=${imagesPerPage}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    allImages = data;
+                    updatePagination();
+                })
+                .catch(error => {
+                    console.error('Error fetching images:', error);
+                    errorContainer.textContent = 'Failed to load images.';
+                    messageContainer.textContent = '';
+                });
+        }
+
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchImages();
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (allImages.length === imagesPerPage) { // Only fetch next if a full page was returned
+                currentPage++;
+                fetchImages();
+            }
+        });
+
+        // Fetch initial images
+        fetchImages();
+    </script>
+</body>
+</html>

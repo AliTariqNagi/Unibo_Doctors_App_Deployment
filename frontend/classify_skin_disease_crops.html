@@ -1,0 +1,473 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Fitzpatrick Scale by Patient</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    .patient-select { margin-bottom: 20px; }
+    .image-card {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .image-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .image-row img {
+      width: 200px;
+      border-radius: 4px;
+      border: 1px solid #999;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 200px;
+    }
+    select, button {
+      padding: 8px;
+      font-size: 14px;
+    }
+    .message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .section-label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Fitzpatrick Scale by Patient</h1>
+
+  <div class="patient-select">
+    <label for="patient-id">Select Patient (Persona ID):</label>
+    <select id="patient-id">
+      <option value="">-- Select Patient --</option>
+    </select>
+  </div>
+
+  <div id="image-container"></div>
+
+  <script>
+    const backendUrl = "http://localhost:8000"; // Adjust if deployed
+
+    const patientSelect = document.getElementById("patient-id");
+    const imageContainer = document.getElementById("image-container");
+
+    // Load patient IDs
+    fetch(`${backendUrl}/unique_patients/`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(persona => {
+          const option = document.createElement("option");
+          option.value = persona;
+          option.textContent = persona;
+          patientSelect.appendChild(option);
+        });
+      });
+
+    patientSelect.addEventListener("change", () => {
+      const selectedId = patientSelect.value;
+      if (!selectedId) return;
+
+      fetch(`${backendUrl}/patient_images/${selectedId}`)
+        .then(res => res.json())
+        .then(images => {
+          imageContainer.innerHTML = "";
+
+          if (images.length === 0) {
+            imageContainer.textContent = "No images found for this patient.";
+            return;
+          }
+
+          images.forEach(img => {
+            const card = document.createElement("div");
+            card.className = "image-card";
+
+            // Original image and mask
+            const originalRow = document.createElement("div");
+            originalRow.className = "image-row";
+
+            const originalImg = document.createElement("img");
+            originalImg.src = `${backendUrl}${img.image_path}`;
+            originalImg.alt = "Original";
+
+            let originalMask;
+            if (img.mask_path) {
+              originalMask = document.createElement("img");
+              originalMask.src = `${backendUrl}${img.mask_path}`;
+              originalMask.alt = "Original Mask";
+            } else {
+              originalMask = document.createElement("div");
+              originalMask.textContent = "(No Original Mask)";
+              originalMask.style.color = "gray";
+              originalMask.style.fontStyle = "italic";
+            }
+
+            const cropRow = document.createElement("div");
+            cropRow.className = "image-row";
+
+            const cropImg = document.createElement("img");
+            cropImg.src = `${backendUrl}${img.crop_image_path}`;
+            cropImg.alt = "Crop";
+
+            let cropMask;
+            if (img.crop_mask_path) {
+              cropMask = document.createElement("img");
+              cropMask.src = `${backendUrl}${img.crop_mask_path}`;
+              cropMask.alt = "Crop Mask";
+            } else {
+              cropMask = document.createElement("div");
+              cropMask.textContent = "(No Crop Mask)";
+              cropMask.style.color = "gray";
+              cropMask.style.fontStyle = "italic";
+            }
+
+            // Controls
+            const controls = document.createElement("div");
+            controls.className = "controls";
+
+            const label = document.createElement("label");
+            label.textContent = "Fitzpatrick Scale:";
+
+            const select = document.createElement("select");
+            ["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"].forEach(type => {
+              const option = document.createElement("option");
+              option.value = type;
+              option.textContent = type;
+              if (img.fitzpatrick_scale === type) {
+                option.selected = true;
+              }
+              select.appendChild(option);
+            });
+
+            const button = document.createElement("button");
+            button.textContent = "Update Skin Tone";
+
+            const message = document.createElement("div");
+            message.className = "message";
+
+            button.addEventListener("click", () => {
+              fetch(`${backendUrl}/skin_disease_images/${img.id}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ...img,
+                  fitzpatrick_scale: select.value,
+                }),
+              })
+                .then(res => {
+                  if (!res.ok) throw new Error("Update failed");
+                  return res.json();
+                })
+                .then(() => {
+                  message.textContent = "Updated successfully!";
+                  message.style.color = "green";
+                })
+                .catch(() => {
+                  message.textContent = "Failed to update.";
+                  message.style.color = "red";
+                });
+            });
+
+            controls.appendChild(label);
+            controls.appendChild(select);
+            controls.appendChild(button);
+            controls.appendChild(message);
+
+            const fitzImg = document.createElement("img");
+            fitzImg.src = `${backendUrl}/images/fitzpatrick.jpg`;
+            fitzImg.alt = "Fitzpatrick Scale";
+            fitzImg.style.maxWidth = "600px";
+            fitzImg.style.border = "1px solid #999";
+            fitzImg.style.borderRadius = "4px";
+
+            const origLabel = document.createElement("div");
+            origLabel.className = "section-label";
+            origLabel.textContent = "Original Image & Mask";
+
+            const cropLabel = document.createElement("div");
+            cropLabel.className = "section-label";
+            cropLabel.textContent = "Crop Image & Mask";
+
+            card.appendChild(origLabel);
+            originalRow.appendChild(originalImg);
+            originalRow.appendChild(originalMask);
+            card.appendChild(originalRow);
+
+            card.appendChild(cropLabel);
+            cropRow.appendChild(cropImg);
+            cropRow.appendChild(cropMask);
+            card.appendChild(cropRow);
+
+            card.appendChild(controls);
+            card.appendChild(fitzImg);
+
+            imageContainer.appendChild(card);
+          });
+        });
+    });
+  </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Fitzpatrick Scale by Patient</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    .patient-select { margin-bottom: 20px; }
+    .image-card {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .image-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .image-row img {
+      width: 200px;
+      border-radius: 4px;
+      border: 1px solid #999;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 300px;
+    }
+    select, button {
+      padding: 8px;
+      font-size: 14px;
+    }
+    .message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .section-label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Fitzpatrick Scale by Patient</h1>
+
+  <div class="patient-select">
+    <label for="patient-id">Select Patient (Persona ID):</label>
+    <select id="patient-id">
+      <option value="">-- Select Patient --</option>
+    </select>
+  </div>
+
+  <div id="image-container"></div>
+
+  <script>
+    const backendUrl = "http://localhost:8000";
+
+    const patientSelect = document.getElementById("patient-id");
+    const imageContainer = document.getElementById("image-container");
+
+    fetch(`${backendUrl}/unique_patients/`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(persona => {
+          const option = document.createElement("option");
+          option.value = persona;
+          option.textContent = persona;
+          patientSelect.appendChild(option);
+        });
+      });
+
+    patientSelect.addEventListener("change", () => {
+      const selectedId = patientSelect.value;
+      if (!selectedId) return;
+
+      fetch(`${backendUrl}/patient_images/${selectedId}`)
+        .then(res => res.json())
+        .then(images => {
+          imageContainer.innerHTML = "";
+
+          if (images.length === 0) {
+            imageContainer.textContent = "No images found for this patient.";
+            return;
+          }
+
+          images.forEach(img => {
+            const card = document.createElement("div");
+            card.className = "image-card";
+
+            const originalRow = document.createElement("div");
+            originalRow.className = "image-row";
+
+            const originalImg = document.createElement("img");
+            originalImg.src = `${backendUrl}${img.image_path}`;
+            originalImg.alt = "Original";
+
+            let originalMask;
+            if (img.mask_path) {
+              originalMask = document.createElement("img");
+              originalMask.src = `${backendUrl}${img.mask_path}`;
+              originalMask.alt = "Original Mask";
+            } else {
+              originalMask = document.createElement("div");
+              originalMask.textContent = "(No Original Mask)";
+              originalMask.style.color = "gray";
+              originalMask.style.fontStyle = "italic";
+            }
+
+            const cropRow = document.createElement("div");
+            cropRow.className = "image-row";
+
+            const cropImg = document.createElement("img");
+            cropImg.src = `${backendUrl}${img.crop_image_path}`;
+            cropImg.alt = "Crop";
+
+            let cropMask;
+            if (img.crop_mask_path) {
+              cropMask = document.createElement("img");
+              cropMask.src = `${backendUrl}${img.crop_mask_path}`;
+              cropMask.alt = "Crop Mask";
+            } else {
+              cropMask = document.createElement("div");
+              cropMask.textContent = "(No Crop Mask)";
+              cropMask.style.color = "gray";
+              cropMask.style.fontStyle = "italic";
+            }
+
+            const controls = document.createElement("div");
+            controls.className = "controls";
+
+
+
+            const updateToneBtn = document.createElement("button");
+            updateToneBtn.textContent = "Update Skin Tone";
+
+            const toneMessage = document.createElement("div");
+            toneMessage.className = "message";
+
+
+
+            // Crop Quality
+            const qualityLabel = document.createElement("label");
+            qualityLabel.textContent = "Crop Quality Rating:";
+
+            const qualitySelect = document.createElement("select");
+            ["", "1", "2", "3", "4", "5", "6", "7"].forEach(val => {
+              const option = document.createElement("option");
+              option.value = val;
+              option.textContent = val ? `${val} - ${["Very poor", "Poor", "Fair", "Neutral", "Good", "Very good", "Excellent"][val - 1]} quality` : "Select rating";
+              if (img.crop_quality_rating == val) option.selected = true;
+              qualitySelect.appendChild(option);
+            });
+
+            // Crop Diagnosis
+            const diagnosisLabel = document.createElement("label");
+            diagnosisLabel.textContent = "Crop Diagnosis:";
+
+            const diagnosisSelect = document.createElement("select");
+            [
+              "", "Iatrogenic drug induced exanthema", "Maculopapular exanthema",
+              "Morbilliform exanthema", "Polymorphous exanthema", "Viral exanthema",
+              "Urticaria", "Pediculosis", "Scabies", "Chickenpox"
+            ].forEach(d => {
+              const option = document.createElement("option");
+              option.value = d;
+              option.textContent = d || "Select diagnosis";
+              if (img.crop_diagnosis === d) option.selected = true;
+              diagnosisSelect.appendChild(option);
+            });
+
+            const updateCropBtn = document.createElement("button");
+            updateCropBtn.textContent = "Update Crop Info";
+
+            const cropMessage = document.createElement("div");
+            cropMessage.className = "message";
+
+            updateCropBtn.addEventListener("click", () => {
+              fetch(`${backendUrl}/update_image/${img.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  crop_quality_rating: parseInt(qualitySelect.value) || null,
+                  crop_diagnosis: diagnosisSelect.value || null
+                })
+              })
+              .then(res => {
+                if (!res.ok) throw new Error("Update failed");
+                return res.json();
+              })
+              .then(() => {
+                cropMessage.textContent = "Crop info updated!";
+                cropMessage.style.color = "green";
+              })
+              .catch(() => {
+                cropMessage.textContent = "Failed to update.";
+                cropMessage.style.color = "red";
+              });
+            });
+
+
+
+            controls.appendChild(qualityLabel);
+            controls.appendChild(qualitySelect);
+
+            controls.appendChild(diagnosisLabel);
+            controls.appendChild(diagnosisSelect);
+
+            controls.appendChild(updateCropBtn);
+            controls.appendChild(cropMessage);
+
+
+            const origLabel = document.createElement("div");
+            origLabel.className = "section-label";
+            origLabel.textContent = "Original Image & Mask";
+
+            const cropLabel = document.createElement("div");
+            cropLabel.className = "section-label";
+            cropLabel.textContent = "Crop Image & Mask";
+
+            card.appendChild(origLabel);
+            originalRow.appendChild(originalImg);
+            originalRow.appendChild(originalMask);
+            card.appendChild(originalRow);
+
+            card.appendChild(cropLabel);
+            cropRow.appendChild(cropImg);
+            cropRow.appendChild(cropMask);
+            card.appendChild(cropRow);
+
+            card.appendChild(controls);
+
+
+            imageContainer.appendChild(card);
+          });
+        });
+    });
+  </script>
+</body>
+</html>

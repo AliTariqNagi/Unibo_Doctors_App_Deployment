@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View/Edit Images Details</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 20px; /* Space between images */
+        }
+        .image-container img {
+            max-width: 40%; /* Adjust as needed */
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-container {
+            width: 500px; /* Increased width of the form */
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: none; /* Initially hidden */
+            flex-direction: column; /* For layout of form elements */
+
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            background-color: #551A8B;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #440077;
+        }
+        .home-button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            width: 100px;
+        }
+        .home-button:hover {
+            background-color: #e0e0e0;
+        }
+        #message-container {
+            margin-top: 20px;
+            color: green;
+            font-weight: bold;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f0f0f0;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+       .edit-button {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>View/Edit Images Details</h1>
+    <div class="disease-selection">
+        <label for="selectedDisease">Select Disease:</label>
+        <select id="selectedDisease" name="selectedDisease">
+            <option value="">-- Select a Disease --</option>
+        </select>
+        <button id="viewImagesButton">View Images</button>
+    </div>
+
+    <div class="image-container" style="display: none;">
+        <div style="text-align: center;">
+            <img id="targetImage" src="" alt="Original Image">
+            <p>Original Image</p>
+        </div>
+        <div style="text-align: center;">
+            <img id="maskImage" src="" alt="Mask Image">
+            <p>Mask Image</p>
+        </div>
+    </div>
+
+    <div class="form-container" style="display: none;">
+        <form id="imageDetailsForm">
+            <input type="hidden" id="imageId" name="imageId">
+            <div><label for="doctor_name">Doctor's Name:</label><input type="text" id="doctor_name" name="doctor_name" required></div>
+            <div><label for="rating">Rating (1-5):</label><input type="number" id="rating" name="rating" min="1" max="5" required></div>
+            <div><label for="comments">Comments (Original Image):</label><textarea id="comments" name="comments"></textarea></div>
+             <div><label for="mask_comments">Comments (Mask Image):</label><textarea id="mask_comments" name="mask_comments"></textarea></div>
+            <div><label for="disease_name">Disease Name:</label><input type="text" id="disease_name" name="disease_name" required></div>
+            <div><label for="category">Category:</label><select id="category" name="category"><option value="disease">Disease</option><option value="non-disease">Non-Disease</option></select></div>
+            <button type="submit">Update Details</button>
+        </form>
+        <div id="message-container"></div>
+        <div id="error-container" class="error-message"></div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <button id="prevButton" style="display: none;">Previous</button>
+        <button id="nextButton" style="display: none;">Next</button>
+    </div>
+
+    <table class="data-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image Path</th>
+                <th>Mask Path</th>
+                <th>Doctor's Name</th>
+                <th>Rating</th>
+                <th>Comments</th>
+                <th>Mask Comments</th>
+                <th>Disease Name</th>
+                <th>Category</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body">
+        </tbody>
+    </table>
+
+    <a href="/" class="home-button">Home</a>
+    <div id="confirmationModal" style="display: none; position: fixed; top: 30%; left: 40%; background: white; padding: 20px; border: 1px solid #ccc; z-index: 999;">
+        <p>Are you sure you want to save changes?</p>
+        <button id="confirmYes">Yes</button>
+        <button id="confirmNo">No</button>
+    </div>
+    
+    <script>
+        const selectedDiseaseSelect = document.getElementById('selectedDisease');
+        const viewImagesButton = document.getElementById('viewImagesButton');
+        const imageContainer = document.querySelector('.image-container');
+        const targetImage = document.getElementById('targetImage');
+        const maskImage = document.getElementById('maskImage');
+        const imageDetailsForm = document.getElementById('imageDetailsForm');
+        const messageContainer = document.getElementById('message-container');
+        const errorContainer = document.getElementById('error-container');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+
+        const doctorNameInput = document.getElementById('doctor_name');
+        const ratingInput = document.getElementById('rating');
+        const commentsInput = document.getElementById('comments');
+        const maskCommentsInput = document.getElementById('mask_comments');
+        const diseaseNameInput = document.getElementById('disease_name');
+        const categorySelect = document.getElementById('category');
+        const imageIdInput = document.getElementById('imageId');
+
+        const dataTable = document.querySelector('.data-table');
+        const dataTableBody = document.getElementById('data-table-body');
+
+
+        const backendUrl = 'http://localhost:8000';
+        let diseaseNames = [];
+        let images = [];
+        let currentIndex = 0;
+        let selectedDisease = '';
+        let editingId = null; // Track the ID of the image being edited
+
+
+       function clearForm() {
+            imageIdInput.value = '';
+            doctorNameInput.value = '';
+            ratingInput.value = '';
+            commentsInput.value = '';
+            maskCommentsInput.value = '';
+            diseaseNameInput.value = '';
+            categorySelect.value = '';
+            errorContainer.textContent = '';
+            messageContainer.textContent = '';
+            editingId = null;
+        }
+
+        function displayImage(index) {
+            if (index < 0 || index >= images.length) {
+                return; // Out of bounds
+            }
+
+            const image = images[index];
+            targetImage.src = `${backendUrl}/${image.image_path}`; 
+            targetImage.alt = `Original Image ${image.image_path}`;
+            maskImage.src = `${backendUrl}/${image.mask_path}`;
+            maskImage.alt = `Mask Image ${image.mask_path}`;
+            imageIdInput.value = image.id;
+            doctorNameInput.value = image.doctor_name || '';
+            ratingInput.value = image.rating || '';
+            commentsInput.value = image.comments || '';
+            maskCommentsInput.value = image.mask_comments || '';
+            diseaseNameInput.value = image.disease_name || '';
+            categorySelect.value = image.category || '';
+
+            imageContainer.style.display = 'flex';
+            imageDetailsForm.style.display = 'flex';
+            prevButton.style.display = index > 0 ? 'inline-block' : 'none';
+            nextButton.style.display = index < images.length - 1 ? 'inline-block' : 'none';
+
+            //update table
+            updateDataTable(images);
+        }
+
+        function updateDataTable(data) {
+            dataTableBody.innerHTML = ''; // Clear the table body
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.image_path}</td>
+                    <td>${item.mask_path}</td>
+                    <td><input type="text" value="${item.doctor_name || ''}" class="editable" data-field="doctor_name" data-id="${item.id}"></td>
+                    <td><input type="number" value="${item.rating || ''}" class="editable" data-field="rating" data-id="${item.id}"></td>
+                    <td><input type="text" value="${item.comments || ''}" class="editable" data-field="comments" data-id="${item.id}"></td>
+                    <td><input type="text" value="${item.mask_comments || ''}" class="editable" data-field="mask_comments" data-id="${item.id}"></td>
+                    <td><input type="text" value="${item.disease_name || ''}" class="editable" data-field="disease_name" data-id="${item.id}"></td>
+                    <td>
+                        <select class="editable" data-field="category" data-id="${item.id}">
+                            <option value="disease" ${item.category === 'disease' ? 'selected' : ''}>Disease</option>
+                            <option value="non-disease" ${item.category === 'non-disease' ? 'selected' : ''}>Non-Disease</option>
+                        </select>
+                    </td>
+                    <td>${item.created_at}</td>
+                    <td><button class="save-button" data-id="${item.id}">💾</button></td>
+                `;
+                dataTableBody.appendChild(row);
+            });
+            dataTable.style.display = 'table';
+            // Auto-save on change
+            // document.querySelectorAll('.editable').forEach(input => {
+            //     input.addEventListener('change', () => {
+            //         const id = input.dataset.id;
+            //         const field = input.dataset.field;
+            //         const value = input.value;
+
+            //         const formData = new FormData();
+            //         formData.append(field, value);
+
+            //         fetch(`${backendUrl}/update_image_details/${id}`, {
+            //             method: 'POST',
+            //             body: formData,
+            //         })
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             messageContainer.textContent = `Updated ${field} for ID ${id}`;
+            //             errorContainer.textContent = '';
+            //         })
+            //         .catch(err => {
+            //             console.error(err);
+            //             errorContainer.textContent = 'Auto-save failed';
+            //         });
+            //     });
+            // });
+
+
+            // Attach event listeners to the edit buttons
+            const saveButtons = document.querySelectorAll('.save-button');
+            saveButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+
+                    // Show confirmation modal
+                    const modal = document.getElementById('confirmationModal');
+                    modal.style.display = 'block';
+
+                    document.getElementById('confirmYes').onclick = () => {
+                        modal.style.display = 'none';
+
+                        const updatedFields = {};
+                        document.querySelectorAll(`.editable[data-id="${id}"]`).forEach(input => {
+                            updatedFields[input.dataset.field] = input.value;
+                        });
+
+                        const formData = new FormData();
+                        for (const key in updatedFields) {
+                            formData.append(key, updatedFields[key]);
+                        }
+
+                        fetch(`${backendUrl}/update_image_details/${id}`, {
+                            method: 'POST',
+                            body: formData,
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            messageContainer.textContent = 'Details saved!';
+                            fetchAndDisplayImages(selectedDisease);
+                        });
+                    };
+
+                    document.getElementById('confirmNo').onclick = () => {
+                        modal.style.display = 'none';
+                    };
+                });
+            });
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    editingId = id; // Store the ID of the item being edited
+                    // Find the image in the array based on the ID.
+                    const imageToEdit = images.find(img => img.id === parseInt(id));
+                    if (imageToEdit) {
+                        // Populate the form with the details of the selected image.
+                        imageIdInput.value = imageToEdit.id;
+                        doctorNameInput.value = imageToEdit.doctor_name || '';
+                        ratingInput.value = imageToEdit.rating || '';
+                        commentsInput.value = imageToEdit.comments || '';
+                        maskCommentsInput.value = imageToEdit.mask_comments || '';
+                        diseaseNameInput.value = imageToEdit.disease_name || '';
+                        categorySelect.value = imageToEdit.category || '';
+
+                        imageContainer.style.display = 'flex';
+                        imageDetailsForm.style.display = 'flex';
+                    }
+                });
+            });
+        }
+
+        function fetchAndDisplayImages(disease) {
+            fetch(`${backendUrl}/disease_images/${disease}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    images = data;
+                    currentIndex = 0;
+                    if (images.length > 0) {
+                        displayImage(currentIndex);
+                        messageContainer.textContent = `Displaying images for ${disease}`;
+                    } else {
+                        imageContainer.style.display = 'none';
+                        imageDetailsForm.style.display = 'none';
+                        prevButton.style.display = 'none';
+                        nextButton.style.display = 'none';
+                        messageContainer.textContent = `No images found for ${disease}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching images:', error);
+                    messageContainer.textContent = 'Failed to fetch images. Please check the console.';
+                    imageContainer.style.display = 'none';
+                    imageDetailsForm.style.display = 'none';
+                    prevButton.style.display = 'none';
+                    nextButton.style.display = 'none';
+
+                });
+        }
+
+
+
+        // Event Listeners
+        viewImagesButton.addEventListener('click', () => {
+            selectedDisease = selectedDiseaseSelect.value;
+            if (selectedDisease) {
+                fetchAndDisplayImages(selectedDisease);
+            } else {
+                alert('Please select a disease.');
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            currentIndex--;
+            displayImage(currentIndex);
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentIndex++;
+            displayImage(currentIndex);
+        });
+
+        imageDetailsForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(imageDetailsForm);
+            const id = formData.get('imageId');
+            const doctorName = formData.get('doctor_name');
+            const rating = formData.get('rating');
+            const comments = formData.get('comments');
+            const maskComments = formData.get('mask_comments');
+            const diseaseName = formData.get('disease_name');
+            const category = formData.get('category');
+
+
+
+            fetch(`${backendUrl}/update_image_details/${id}`, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.detail || 'Failed to update image details');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                messageContainer.textContent = data.message;
+                errorContainer.textContent = '';
+                // Update the displayed image details
+                images = images.map(img => {
+                    if(img.id === parseInt(id)) {
+                         return {
+                            ...img,
+                            doctor_name: doctorName,
+                            rating: rating,
+                            comments: comments,
+                            mask_comments: maskComments,
+                            disease_name: diseaseName,
+                            category: category,
+                        }
+                    }
+                    return img;
+                });
+               // After successful update, refresh the images.
+                fetchAndDisplayImages(selectedDisease);
+                clearForm();
+            })
+            .catch(error => {
+                console.error('Error updating image details:', error);
+                errorContainer.textContent = error.message;
+                messageContainer.textContent = '';
+            });
+        });
+
+        // Initial population of disease dropdown
+        fetch(`${backendUrl}/disease_names/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                diseaseNames = data;
+                diseaseNames.forEach(diseaseName => {
+                    const option = document.createElement('option');
+                    option.value = diseaseName;
+                    option.textContent = diseaseName;
+                    selectedDiseaseSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching disease names:', error);
+                messageContainer.textContent = 'Failed to load diseases. Please check the console.';
+            });
+            function bindLivePreview() {
+                [doctorNameInput, ratingInput, commentsInput, maskCommentsInput, diseaseNameInput, categorySelect].forEach(input => {
+                    input.addEventListener('input', () => {
+                        const id = parseInt(imageIdInput.value);
+                        const index = images.findIndex(img => img.id === id);
+                        if (index !== -1) {
+                            images[index] = {
+                                ...images[index],
+                                doctor_name: doctorNameInput.value,
+                                rating: ratingInput.value,
+                                comments: commentsInput.value,
+                                mask_comments: maskCommentsInput.value,
+                                disease_name: diseaseNameInput.value,
+                                category: categorySelect.value
+                            };
+                            updateDataTable(images);
+                        }
+                    });
+                });
+            }
+            bindLivePreview(); // Call this once form elements are initialized
+
+    </script>
+</body>
+</html>

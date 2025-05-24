@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Categorization Data</title>
+    <style>
+        body { font-family: sans-serif; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 10px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>All Categorization Entries</h1>
+    <table id="categorizationTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image Path</th>
+                <th>Mask Path</th> 
+                <th>Doctor's Name</th>
+                <th>Rating</th>
+                <th>Comments</th>
+                <th>Mask Comments</th> 
+                <th>Disease Name</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+    <button id="downloadButton">Download as Excel</button>
+
+    <script>
+        const tableBody = document.querySelector('#categorizationTable tbody');
+        const downloadButton = document.getElementById('downloadButton');
+        const backendUrl = 'http://localhost:8000';
+
+        async function fetchCategorizations() {
+            try {
+                const response = await fetch(`${backendUrl}/all_categorizations/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                populateTable(data);
+            } catch (error) {
+                console.error('Error fetching categorizations:', error);
+                tableBody.innerHTML = '<tr><td colspan="9">Failed to load data. Please check the console.</td></tr>';
+            }
+        }
+
+        function populateTable(data) {
+            tableBody.innerHTML = '';
+            data.forEach(entry => {
+                const row = tableBody.insertRow();
+                row.insertCell().textContent = entry.id;
+                row.insertCell().textContent = entry.image_path;
+                row.insertCell().textContent = entry.mask_path || ''; 
+                row.insertCell().textContent = entry.doctor_name;
+                row.insertCell().textContent = entry.rating;
+                row.insertCell().textContent = entry.comments || '';
+                row.insertCell().textContent = entry.mask_comments || ''; 
+                row.insertCell().textContent = entry.disease_name;
+                row.insertCell().textContent = entry.category;
+            });
+        }
+
+        downloadButton.addEventListener('click', () => {
+            window.location.href = `${backendUrl}/download_excel/`;
+        });
+
+        fetchCategorizations();
+    </script>
+</body>
+</html>

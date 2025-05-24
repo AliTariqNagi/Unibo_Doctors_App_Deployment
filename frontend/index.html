@@ -1,0 +1,1893 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            padding: 20px;
+            background: linear-gradient(to bottom, #f8f8f8, #fafafa);
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #b81c22;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: #b81c22;
+        }
+        .login-container input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            padding: 10px 20px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .login-container button:hover {
+            background-color: #a7181e;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="password" id="admin-password" placeholder="Password">
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                // Redirect to the main page
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            padding: 20px;
+            background: linear-gradient(to bottom, #f8f8f8, #fafafa);
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #b81c22;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Header Styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 750px; /* Added padding to shift content to the left */
+        }
+
+        .header-container img {
+            margin-right: 20px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            max-width: 300px;
+            height: auto;
+        }
+
+        .header-container h1 {
+            margin-bottom: 0;
+            margin-left: 0;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: #b81c22;
+        }
+        .login-container input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            padding: 10px 20px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .login-container button:hover {
+            background-color: #a7181e;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="password" id="admin-password" placeholder="Password">
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                // Redirect to the main page
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Removed justify-content: center; */
+            padding: 20px;
+            background: linear-gradient(to bottom, #f8f8f8, #fafafa);
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #b81c22;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Header Styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 750px;
+        }
+
+        .header-container img {
+            margin-right: 20px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            max-width: 300px;
+            height: auto;
+        }
+
+        .header-container h1 {
+            margin-bottom: 0;
+            margin-left: 0;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: #b81c22;
+        }
+        .login-container input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            padding: 10px 20px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .login-container button:hover {
+            background-color: #a7181e;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="password" id="admin-password" placeholder="Password">
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                // Redirect to the main page
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f8f8f8, #fafafa);
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #b81c22;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Header Styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 1010px;
+        }
+
+        .header-container img {
+            margin-right: 20px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            max-width: 200px; /* Reduced max-width from 300px to 200px */
+            height: auto;
+        }
+
+        .header-container h1 {
+            margin-bottom: 0;
+            margin-left: 0;
+            font-size: 1.5em; /* Reduced font-size, default is 2em */
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            width: 300px;
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: #b81c22;
+        }
+        .login-container input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            padding: 10px 20px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .login-container button:hover {
+            background-color: #a7181e;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="password" id="admin-password" placeholder="Password">
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                // Redirect to the main page
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f8f8f8, #fafafa);
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #b81c22;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Header Styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: 1010px;
+        }
+
+        .header-container img {
+            margin-right: 20px;
+            margin-bottom: 0;
+            border-radius: 8px;
+            max-width: 200px; /* Reduced max-width from 300px to 200px */
+            height: auto;
+        }
+
+        .header-container h1 {
+            margin-bottom: 0;
+            margin-left: 0;
+            font-size: 1.5em; /* Reduced font-size, default is 2em */
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            width: 300px;
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: #b81c22;
+        }
+        .login-container input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            padding: 10px 20px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .login-container button:hover {
+            background-color: #a7181e;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="password" id="admin-password" placeholder="Password">
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        // Check if the user is already logged in
+        if (sessionStorage.getItem('loggedIn') === 'true') {
+            window.location.href = 'main.html'; // Redirect to main page if logged in
+        }
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                // Set loggedIn to true in session storage
+                sessionStorage.setItem('loggedIn', 'true');
+                // Redirect to the main page
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #fffde7);
+            background-size: cover;
+            animation: fadeInBackground 2s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from {
+                background-color: rgba(224, 247, 250, 0);
+            }
+            to {
+                background-color: #e0f7fa;
+            }
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #b81c22;  /* Changed color to match Admin Login */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 3em;
+            animation: fadeIn 1s ease-in-out, pulse 2s infinite alternate;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulse {
+          from { transform: scale(1); }
+          to { transform: scale(1.06); }
+        }
+
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .header-container img {
+            margin-bottom: 25px;
+            border-radius: 16px;
+            max-width: 350px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 2.5s infinite alternate;
+        }
+
+        .header-container img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            width: 450px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-container h2 {
+            margin-bottom: 30px;
+            color: #b81c22;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-container input {
+            padding: 18px;
+            margin: 12px 0;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .login-container input:focus {
+            border-color: #b81c22;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button {
+            padding: 18px 35px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            width: 100%;
+            font-size: 1.3em;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button:hover {
+            background-color: #a7181e;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        .additional-images {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s ease-in-out forwards;
+        }
+
+        .additional-images img {
+            max-width: 32%;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .additional-images img:hover {
+            transform: scale(1.06);
+            box-shadow: 0 9px 18px rgba(0, 0, 0, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username" required>
+        <input type="password" id="admin-password" placeholder="Password" required>
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div class="additional-images">
+        <img src="https://source.unsplash.com/random/400x300/?doctor,stethoscope" alt="Doctor with stethoscope">
+        <img src="https://source.unsplash.com/random/400x300/?hospital,clinic" alt="Hospital clinic">
+        <img src="https://source.unsplash.com/random/400x300/?medical,research" alt="Medical research">
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #fffde7);
+            background-size: cover;
+            animation: fadeInBackground 2s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from {
+                background-color: rgba(224, 247, 250, 0);
+            }
+            to {
+                background-color: #e0f7fa;
+            }
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #b81c22;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 3em;
+            animation: fadeIn 1s ease-in-out; /* Removed pulse animation */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .header-container img {
+            margin-bottom: 25px;
+            border-radius: 16px;
+            max-width: 350px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 2.5s infinite alternate;
+        }
+
+        .header-container img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            width: 450px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-container h2 {
+            margin-bottom: 30px;
+            color: #b81c22;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-container input {
+            padding: 18px;
+            margin: 12px 0;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .login-container input:focus {
+            border-color: #b81c22;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button {
+            padding: 18px 35px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            width: 100%;
+            font-size: 1.3em;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button:hover {
+            background-color: #a7181e;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        .additional-images {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s ease-in-out forwards;
+        }
+
+        .additional-images img {
+            max-width: 32%;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .additional-images img:hover {
+            transform: scale(1.06);
+            box-shadow: 0 9px 18px rgba(0, 0, 0, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username" required>
+        <input type="password" id="admin-password" placeholder="Password" required>
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div class="additional-images">
+        <img src="https://source.unsplash.com/random/400x300/?doctor,stethoscope" alt="Doctor with stethoscope">
+        <img src="https://source.unsplash.com/random/400x300/?hospital,clinic" alt="Hospital clinic">
+        <img src="https://source.unsplash.com/random/400x300/?medical,research" alt="Medical research">
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #fffde7);
+            background-size: cover;
+            animation: fadeInBackground 2s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from {
+                background-color: rgba(224, 247, 250, 0);
+            }
+            to {
+                background-color: #e0f7fa;
+            }
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #b81c22;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 2.5em;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+            text-align: left;
+            padding-left: 390px;
+        }
+
+        .header-container img {
+            margin-right: 20px;
+            margin-bottom: 0;
+            border-radius: 16px;
+            max-width: 250px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 2.5s infinite alternate;
+        }
+
+        .header-container img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            width: 450px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-container h2 {
+            margin-bottom: 25px; /* Reduced margin-bottom from 30px to 25px */
+            color: #b81c22;
+            font-size: 2em; /* Reduced font size from 2.5em to 2em */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-container input {
+            padding: 18px;
+            margin: 12px 0;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .login-container input:focus {
+            border-color: #b81c22;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button {
+            padding: 18px 35px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            width: 100%;
+            font-size: 1.3em;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button:hover {
+            background-color: #a7181e;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        .additional-images {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s ease-in-out forwards;
+        }
+
+        .additional-images img {
+            max-width: 32%;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .additional-images img:hover {
+            transform: scale(1.06);
+            box-shadow: 0 9px 18px rgba(0, 0, 0, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username" required>
+        <input type="password" id="admin-password" placeholder="Password" required>
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div class="additional-images">
+        <img src="https://source.unsplash.com/random/400x300/?doctor,stethoscope" alt="Doctor with stethoscope">
+        <img src="https://source.unsplash.com/random/400x300/?hospital,clinic" alt="Hospital clinic">
+        <img src="https://source.unsplash.com/random/400x300/?medical,research" alt="Medical research">
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Changed justify-content to flex-start */
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #fffde7);
+            background-size: cover;
+            animation: fadeInBackground 2s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from {
+                background-color: rgba(224, 247, 250, 0);
+            }
+            to {
+                background-color: #e0f7fa;
+            }
+        }
+
+        h1 {
+            margin-bottom: 18px;
+            color: #b81c22;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 1.75em;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px; /* Reduced margin-bottom from 24px to 16px */
+            width: 100%;
+            text-align: left;
+            padding-left: 565px;
+            margin-top: 20px; /* Added margin-top to move it down from top */
+        }
+
+        .header-container img {
+            margin-right: 12px;
+            margin-bottom: 0;
+            border-radius: 16px;
+            max-width: 150px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 2.5s infinite alternate;
+        }
+
+        .header-container img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            width: 320px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease-out;
+            margin-top: 0; /* Removed top margin from login container */
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-container h2 {
+            margin-bottom: 16px;
+            color: #b81c22;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-container input {
+            padding: 10px;
+            margin: 8px 0;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .login-container input:focus {
+            border-color: #b81c22;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button {
+            padding: 12px 24px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            width: 100%;
+            font-size: 1em;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button:hover {
+            background-color: #a7181e;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.9em;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        .additional-images {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s ease-in-out forwards;
+            display: none; /* Removed the images */
+        }
+
+        .additional-images img {
+            max-width: 30%;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .additional-images img:hover {
+            transform: scale(1.06);
+            box-shadow: 0 9px 18px rgba(0, 0, 0, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username" required>
+        <input type="password" id="admin-password" placeholder="Password" required>
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div class="additional-images">
+        <img src="https://source.unsplash.com/random/400x300/?doctor,stethoscope" alt="Doctor with stethoscope">
+        <img src="https://source.unsplash.com/random/400x300/?hospital,clinic" alt="Hospital clinic">
+        <img src="https://source.unsplash.com/random/400x300/?medical,research" alt="Medical research">
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unibo Doctors Validation App - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Changed justify-content to flex-start */
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa, #fffde7);
+            background-size: cover;
+            animation: fadeInBackground 2s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from {
+                background-color: rgba(224, 247, 250, 0);
+            }
+            to {
+                background-color: #e0f7fa;
+            }
+        }
+
+        h1 {
+            margin-bottom: 18px;
+            color: #b81c22;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 1.75em;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px; /* Reduced margin-bottom from 24px to 16px */
+            width: 100%;
+            text-align: left;
+            padding-left: 565px;
+            margin-top: 20px; /* Added margin-top to move it down from top */
+        }
+
+        .header-container img {
+            margin-right: 12px;
+            margin-bottom: 0;
+            border-radius: 16px;
+            max-width: 150px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 2.5s infinite alternate;
+        }
+
+        .header-container img:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            width: 320px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1s ease-out;
+            margin-top: 0; /* Removed top margin from login container */
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .login-container h2 {
+            margin-bottom: 16px;
+            color: #b81c22;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .login-container input {
+            padding: 10px;
+            margin: 8px 0;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .login-container input:focus {
+            border-color: #b81c22;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button {
+            padding: 12px 24px;
+            background-color: #b81c22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            width: 100%;
+            font-size: 1em;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container button:hover {
+            background-color: #a7181e;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.9em;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        .additional-images {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s ease-in-out forwards;
+            display: none; /* Removed the images */
+        }
+
+        .additional-images img {
+            max-width: 30%;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .additional-images img:hover {
+            transform: scale(1.06);
+            box-shadow: 0 9px 18px rgba(0, 0, 0, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <img src="unibo.jpg" alt="University of Bologna" >
+        <h1>Unibo Doctors Validation App</h1>
+    </div>
+
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username" required>
+        <input type="password" id="admin-password" placeholder="Password" required>
+        <p id="login-error" class="error-message"></p>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div class="additional-images">
+        <img src="https://source.unsplash.com/random/400x300/?doctor,stethoscope" alt="Doctor with stethoscope">
+        <img src="https://source.unsplash.com/random/400x300/?hospital,clinic" alt="Hospital clinic">
+        <img src="https://source.unsplash.com/random/400x300/?medical,research" alt="Medical research">
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const loginButton = document.getElementById('login-button');
+        const loginError = document.getElementById('login-error');
+
+        const adminUsername = "admin";
+        const adminPassword = "password";
+
+        loginButton.addEventListener('click', () => {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === adminUsername && password === adminPassword) {
+                window.location.href = "main.html";
+            } else {
+                loginError.textContent = "Invalid credentials. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html> -->

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter by Disease</title>
+    <style>
+        body { font-family: sans-serif; }
+        #filter-form { width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        select, input[type="text"], button { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box; }
+        #image-container {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        #image-container img {
+            max-width: 40%;
+            height: auto;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+        #entry-details { border: 1px solid #eee; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        #entry-details h3 { margin-top: 0; }
+        #navigation-buttons button { width: auto; margin-right: 10px; padding: 10px 15px; }
+        #message-container { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Filter Images by Disease</h1>
+    <div id="filter-form">
+        <label for="category">Category:</label>
+        <select id="category">
+            <option value="">Select Category</option>
+            <option value="disease">Disease</option>
+            <option value="non-disease">Non-Disease</option>
+        </select>
+        <label for="disease_name">Disease Name:</label>
+        <input type="text" id="disease_name" placeholder="Enter Disease Name (exact match)">
+        <button id="filterButton">Filter</button>
+    </div>
+
+    <div id="image-container">
+        <div style="text-align: center;">
+            <img id="filteredImage" src="" alt="Original Image" style="display: none;">
+            <p>Original Image</p>
+        </div>
+        <div style="text-align: center;">
+            <img id="filteredMaskImage" src="" alt="Mask Image" style="display: none;">
+            <p>Mask Image</p>
+        </div>
+    </div>
+
+    <div id="entry-details" style="display: none;">
+        <h3>Entry Details:</h3>
+        <p><strong>Doctor's Name:</strong> <span id="doctorName"></span></p>
+        <p><strong>Rating:</strong> <span id="rating"></span></p>
+        <p><strong>Comments:</strong> <span id="comments"></span></p>
+        <p><strong>Mask Comments:</strong> <span id="maskComments"></span></p>
+        <p><strong>Disease Name:</strong> <span id="entryDiseaseName"></span></p>
+        <p><strong>Category:</strong> <span id="entryCategory"></span></p>
+    </div>
+
+    <div id="navigation-buttons" style="display: none;">
+        <button id="prevButton">Previous</button>
+        <button id="nextButton">Next</button>
+    </div>
+
+    <div id="message-container"></div>
+
+    <script>
+        const categorySelect = document.getElementById('category');
+        const diseaseNameInput = document.getElementById('disease_name');
+        const filterButton = document.getElementById('filterButton');
+        const imageContainer = document.getElementById('image-container');
+        const filteredImage = document.getElementById('filteredImage');
+        const filteredMaskImage = document.getElementById('filteredMaskImage');
+        const entryDetails = document.getElementById('entry-details');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const messageContainer = document.getElementById('message-container');
+        const backendUrl = 'http://localhost:8000';
+
+        let filteredEntries = [];
+        let currentIndex = 0;
+
+        async function fetchFilteredData() {
+            const category = categorySelect.value;
+            const diseaseName = diseaseNameInput.value.trim();
+
+            if (!category) {
+                messageContainer.textContent = 'Please select a category.';
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('category', category);
+            if (diseaseName) {
+                params.append('disease_name', diseaseName);
+            }
+
+            try {
+                const response = await fetch(`${backendUrl}/filter_entries/?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                filteredEntries = data;
+                currentIndex = 0;
+                if (filteredEntries.length > 0) {
+                    displayEntry(filteredEntries[currentIndex]);
+                    imageContainer.style.display = 'flex';
+                    entryDetails.style.display = 'block';
+                    document.getElementById('navigation-buttons').style.display = 'block';
+                    messageContainer.textContent = '';
+                } else {
+                    filteredImage.style.display = 'none';
+                    filteredMaskImage.style.display = 'none';
+                    entryDetails.style.display = 'none';
+                    document.getElementById('navigation-buttons').style.display = 'none';
+                    messageContainer.textContent = 'No entries found for the selected criteria.';
+                }
+            } catch (error) {
+                console.error('Error fetching filtered data:', error);
+                messageContainer.textContent = 'Failed to fetch data. Please check the console.';
+                imageContainer.style.display = 'none';
+                entryDetails.style.display = 'none';
+                document.getElementById('navigation-buttons').style.display = 'none';
+            }
+        }
+
+        function displayEntry(entry) {
+            filteredImage.src = entry.image_path ? `${backendUrl}/${entry.image_path}` : '';
+            filteredImage.style.display = entry.image_path ? 'block' : 'none';
+            filteredMaskImage.src = entry.mask_path ? `${backendUrl}/${entry.mask_path}` : '';
+            filteredMaskImage.style.display = entry.mask_path ? 'block' : 'none';
+
+            document.getElementById('doctorName').textContent = entry.doctor_name || 'N/A';
+            document.getElementById('rating').textContent = entry.rating || 'N/A';
+            document.getElementById('comments').textContent = entry.comments || 'N/A';
+            document.getElementById('maskComments').textContent = entry.mask_comments || 'N/A';
+            document.getElementById('entryDiseaseName').textContent = entry.disease_name || 'N/A';
+            document.getElementById('entryCategory').textContent = entry.category || 'N/A';
+        }
+
+        filterButton.addEventListener('click', fetchFilteredData);
+
+        nextButton.addEventListener('click', () => {
+            if (filteredEntries.length > 0 && currentIndex < filteredEntries.length - 1) {
+                currentIndex++;
+                displayEntry(filteredEntries[currentIndex]);
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (filteredEntries.length > 0 && currentIndex > 0) {
+                currentIndex--;
+                displayEntry(filteredEntries[currentIndex]);
+            }
+        });
+    </script>
+</body>
+</html>

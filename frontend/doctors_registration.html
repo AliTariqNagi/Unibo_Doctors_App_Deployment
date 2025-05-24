@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors Registration</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .registration-form {
+            width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #551A8B;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover {
+            background-color: #440077;
+        }
+        .home-button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            width: 100px;
+        }
+        .home-button:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Doctors Registration</h1>
+    <form class="registration-form" id="registrationForm" method="post" action="http://127.0.0.1:8000/register_doctor/">
+        <div class="form-group">
+            <label for="doctorName">Doctor's Name:</label>
+            <input type="text" id="doctorName" name="doctorName" required>
+        </div>
+        <div class="form-group">
+            <label for="hospital">Hospital:</label>
+            <input type="text" id="hospital" name="hospital">
+        </div>
+        <div class="form-group">
+            <label for="hospitalAddress">Hospital Address:</label>
+            <textarea id="hospitalAddress" name="hospitalAddress"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="contactNumber">Contact Number:</label>
+            <input type="tel" id="contactNumber" name="contactNumber">
+        </div>
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="specialization">Specialization:</label>
+            <input type="text" id="specialization" name="specialization">
+        </div>
+        <div class="form-group">
+            <label for="registrationId">Registration ID:</label>
+            <input type="text" id="registrationId" name="registrationId" required>
+        </div>
+        <div class="form-group">
+            <label for="yearsOfExperience">Years of Experience:</label>
+            <input type="number" id="yearsOfExperience" name="yearsOfExperience" min="0">
+        </div>  
+        <button type="submit">Register</button>
+    </form>
+    <a href="/" class="home-button">Home</a>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('http://127.0.0.1:8000/register_doctor/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {  // Get the response text
+                        throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(result => {
+                alert('Registration successful!');
+                document.getElementById('registrationForm').reset();
+            })
+            .catch(error => {
+                console.error('Error registering doctor:', error);
+                alert('Error during registration: ' + error.message);
+            });
+        });
+    </script>
+</body>
+</html>
+

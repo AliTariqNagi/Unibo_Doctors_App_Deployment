@@ -1,0 +1,420 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Skin Tones</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 20px; }
+    .image-entry { display: flex; gap: 20px; margin-bottom: 30px; align-items: center; }
+    img { width: 200px; height: auto; border: 1px solid #ccc; border-radius: 5px; }
+    .controls { display: flex; flex-direction: column; gap: 10px; }
+    select, button { padding: 8px; border-radius: 4px; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+
+<h1>Modify Skin Tone Classifications</h1>
+<div id="image-container"></div>
+
+<script>
+  const backendUrl = 'http://localhost:8000';
+  const imageContainer = document.getElementById('image-container');
+
+  function createImageEntry(image) {
+    const entry = document.createElement('div');
+    entry.className = 'image-entry';
+
+    const originalImg = document.createElement('img');
+    originalImg.src = backendUrl + image.image_path;
+    originalImg.alt = 'Original Image';
+
+    entry.appendChild(originalImg);
+
+    if (image.mask_path) {
+      const maskImg = document.createElement('img');
+      maskImg.src = backendUrl + image.mask_path;
+      maskImg.alt = 'Mask Image';
+      entry.appendChild(maskImg);
+    }
+
+    const controls = document.createElement('div');
+    controls.className = 'controls';
+
+    const label = document.createElement('label');
+    label.textContent = `Current Fitzpatrick: ${image.fitzpatrick_scale || "Not Set"}`;
+    controls.appendChild(label);
+
+    const select = document.createElement('select');
+    ["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"].forEach(type => {
+      const option = document.createElement('option');
+      option.value = type;
+      option.textContent = type;
+      if (type === image.fitzpatrick_scale) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+    controls.appendChild(select);
+
+    const button = document.createElement('button');
+    button.textContent = "Update Fitzpatrick Scale";
+    controls.appendChild(button);
+
+    const message = document.createElement('div');
+    controls.appendChild(message);
+
+    button.addEventListener('click', () => {
+      const newScale = select.value;
+      fetch(`${backendUrl}/skin_disease_images/${image.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fitzpatrick_scale: newScale })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to update");
+        }
+        return response.json();
+      })
+      .then(data => {
+        message.textContent = "Updated successfully!";
+        message.className = 'success';
+        label.textContent = `Current Fitzpatrick: ${newScale}`;
+      })
+      .catch(err => {
+        message.textContent = err.message;
+        message.className = 'error';
+      });
+    });
+
+    entry.appendChild(controls);
+    return entry;
+  }
+
+  // Load all skin disease images
+  fetch(`${backendUrl}/check_skin_disease_images/`)
+    .then(response => response.json())
+    .then(images => {
+      images.forEach(image => {
+        const entry = createImageEntry(image);
+        imageContainer.appendChild(entry);
+      });
+    })
+    .catch(err => {
+      console.error("Failed to load images", err);
+      imageContainer.innerHTML = "<p style='color:red'>Failed to load images.</p>";
+    });
+</script>
+
+</body>
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Fitzpatrick Scale by Patient</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    .patient-select { margin-bottom: 20px; }
+    .image-card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; }
+    .image-card img { width: 200px; border-radius: 4px; border: 1px solid #999; }
+    .controls { display: flex; flex-direction: column; gap: 10px; }
+    select, button { padding: 8px; font-size: 14px; }
+    .message { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Edit Fitzpatrick Scale by Patient</h1>
+
+  <div class="patient-select">
+    <label for="patient-id">Select Patient (Persona ID):</label>
+    <select id="patient-id">
+      <option value="">-- Select Patient --</option>
+    </select>
+  </div>
+
+  <div id="image-container"></div>
+
+  <script>
+    const backendUrl = "http://localhost:8000"; // Adjust if deployed elsewhere
+
+    const patientSelect = document.getElementById("patient-id");
+    const imageContainer = document.getElementById("image-container");
+
+    // Load unique patients
+    fetch(`${backendUrl}/unique_patients/`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(persona => {
+          const option = document.createElement("option");
+          option.value = persona;
+          option.textContent = persona;
+          patientSelect.appendChild(option);
+        });
+      });
+
+    patientSelect.addEventListener("change", () => {
+      const selectedId = patientSelect.value;
+      if (!selectedId) return;
+
+      fetch(`${backendUrl}/patient_images/${selectedId}`)
+        .then(res => res.json())
+        .then(images => {
+          imageContainer.innerHTML = "";
+
+          if (images.length === 0) {
+            imageContainer.textContent = "No images found for this patient.";
+            return;
+          }
+
+          images.forEach(img => {
+            const card = document.createElement("div");
+            card.className = "image-card";
+
+            const original = document.createElement("img");
+            original.src = `${backendUrl}${img.image_path}`;
+            original.alt = img.image_name;
+
+            let maskElement;
+            if (img.mask_path) {
+              maskElement = document.createElement("img");
+              maskElement.src = `${backendUrl}${img.mask_path}`;
+              maskElement.alt = "Mask";
+            } else {
+              maskElement = document.createElement("div");
+              maskElement.textContent = "(No Mask)";
+              maskElement.style.fontStyle = "italic";
+              maskElement.style.color = "gray";
+            }
+
+            const controls = document.createElement("div");
+            controls.className = "controls";
+
+            const label = document.createElement("label");
+            label.textContent = "Fitzpatrick Scale:";
+
+            const select = document.createElement("select");
+            ["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"].forEach(type => {
+              const option = document.createElement("option");
+              option.value = type;
+              option.textContent = type;
+              if (img.fitzpatrick_scale === type) {
+                option.selected = true;
+              }
+              select.appendChild(option);
+            });
+
+            const button = document.createElement("button");
+            button.textContent = "Update Skin Tone";
+
+            const message = document.createElement("div");
+            message.className = "message";
+
+            button.addEventListener("click", () => {
+              fetch(`${backendUrl}/skin_disease_images/${img.id}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ...img,
+                  fitzpatrick_scale: select.value,
+                }),
+              })
+                .then(res => {
+                  if (!res.ok) throw new Error("Update failed");
+                  return res.json();
+                })
+                .then(() => {
+                  message.textContent = "Updated successfully!";
+                  message.style.color = "green";
+                })
+                .catch(() => {
+                  message.textContent = "Failed to update.";
+                  message.style.color = "red";
+                });
+            });
+
+            controls.appendChild(label);
+            controls.appendChild(select);
+            controls.appendChild(button);
+            controls.appendChild(message);
+
+            card.appendChild(original);
+            card.appendChild(maskElement);
+            card.appendChild(controls);
+
+            imageContainer.appendChild(card);
+          });
+        });
+    });
+  </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Fitzpatrick Scale by Patient</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    .patient-select { margin-bottom: 20px; }
+    .image-card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    .image-card img { width: 200px; border-radius: 4px; border: 1px solid #999; }
+    .controls { display: flex; flex-direction: column; gap: 10px; }
+    select, button { padding: 8px; font-size: 14px; }
+    .message { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Edit Fitzpatrick Scale by Patient</h1>
+
+  <div class="patient-select">
+    <label for="patient-id">Select Patient (Persona ID):</label>
+    <select id="patient-id">
+      <option value="">-- Select Patient --</option>
+    </select>
+  </div>
+
+  <div id="image-container"></div>
+
+  <script>
+    const backendUrl = "http://localhost:8000"; // Adjust if deployed elsewhere
+
+    const patientSelect = document.getElementById("patient-id");
+    const imageContainer = document.getElementById("image-container");
+
+    // Load unique patients
+    fetch(`${backendUrl}/unique_patients/`)
+      .then(res => res.json())
+      .then(data => {
+        data.forEach(persona => {
+          const option = document.createElement("option");
+          option.value = persona;
+          option.textContent = persona;
+          patientSelect.appendChild(option);
+        });
+      });
+
+    patientSelect.addEventListener("change", () => {
+      const selectedId = patientSelect.value;
+      if (!selectedId) return;
+
+      fetch(`${backendUrl}/patient_images/${selectedId}`)
+        .then(res => res.json())
+        .then(images => {
+          imageContainer.innerHTML = "";
+
+          if (images.length === 0) {
+            imageContainer.textContent = "No images found for this patient.";
+            return;
+          }
+
+          images.forEach(img => {
+            const card = document.createElement("div");
+            card.className = "image-card";
+
+            const original = document.createElement("img");
+            original.src = `${backendUrl}${img.image_path}`;
+            original.alt = img.image_name;
+
+            let maskElement;
+            if (img.mask_path) {
+              maskElement = document.createElement("img");
+              maskElement.src = `${backendUrl}${img.mask_path}`;
+              maskElement.alt = "Mask";
+            } else {
+              maskElement = document.createElement("div");
+              maskElement.textContent = "(No Mask)";
+              maskElement.style.fontStyle = "italic";
+              maskElement.style.color = "gray";
+            }
+
+            const controls = document.createElement("div");
+            controls.className = "controls";
+
+            const label = document.createElement("label");
+            label.textContent = "Fitzpatrick Scale:";
+
+            const select = document.createElement("select");
+            ["Type I", "Type II", "Type III", "Type IV", "Type V", "Type VI"].forEach(type => {
+              const option = document.createElement("option");
+              option.value = type;
+              option.textContent = type;
+              if (img.fitzpatrick_scale === type) {
+                option.selected = true;
+              }
+              select.appendChild(option);
+            });
+
+            const button = document.createElement("button");
+            button.textContent = "Update Skin Tone";
+
+            const message = document.createElement("div");
+            message.className = "message";
+
+            button.addEventListener("click", () => {
+              fetch(`${backendUrl}/skin_disease_images/${img.id}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ...img,
+                  fitzpatrick_scale: select.value,
+                }),
+              })
+                .then(res => {
+                  if (!res.ok) throw new Error("Update failed");
+                  return res.json();
+                })
+                .then(() => {
+                  message.textContent = "Updated successfully!";
+                  message.style.color = "green";
+                })
+                .catch(() => {
+                  message.textContent = "Failed to update.";
+                  message.style.color = "red";
+                });
+            });
+
+            controls.appendChild(label);
+            controls.appendChild(select);
+            controls.appendChild(button);
+            controls.appendChild(message);
+
+            card.appendChild(original);
+            card.appendChild(maskElement);
+            card.appendChild(controls);
+
+            // Add Fitzpatrick scale image below each row
+            const scaleImage = document.createElement("img");
+            scaleImage.src = `${backendUrl}/images/fitzpatrick.jpg`;
+            scaleImage.alt = "Fitzpatrick Scale";
+            scaleImage.style.width = "100%";
+            scaleImage.style.maxWidth = "600px";
+            scaleImage.style.marginTop = "10px";
+            scaleImage.style.border = "1px solid #999";
+            scaleImage.style.borderRadius = "4px";
+
+            card.appendChild(scaleImage);
+
+            imageContainer.appendChild(card);
+          });
+        });
+    });
+  </script>
+</body>
+</html>

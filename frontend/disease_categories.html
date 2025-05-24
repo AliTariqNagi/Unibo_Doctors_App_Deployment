@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Categories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 640px;
+        }
+
+        .heading {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #6d28d9; /* Violet */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .disease-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .disease-list li {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e0e7eb; /* Light gray border */
+            transition: background-color 0.3s ease;
+        }
+
+        .disease-list li:last-child {
+            border-bottom: none;
+        }
+
+        .disease-list li:hover {
+            background-color: #f0f9ff; /* Very light blue hover */
+        }
+
+        .message-container {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .error-message {
+            color: #ef4444; /* Red */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
+    <div class="container bg-white rounded-lg shadow-md">
+        <h2 class="heading text-violet-600 text-center mb-6">Disease Categories</h2>
+        <ul id="disease-list" class="disease-list">
+            </ul>
+        <div id="message-container" class="message-container"></div>
+    </div>
+
+    <script>
+        const diseaseList = document.querySelector('#disease-list');
+        const messageContainer = document.getElementById('message-container');
+        const backendUrl = 'http://localhost:8000';
+
+        async function fetchDiseaseCategories() {
+            try {
+                const response = await fetch(`${backendUrl}/disease_names/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    data.forEach(diseaseName => {
+                        const li = document.createElement('li');
+                        li.textContent = diseaseName;
+                        diseaseList.appendChild(li);
+                    });
+                } else {
+                    messageContainer.textContent = 'No disease categories found.';
+                }
+            } catch (error) {
+                console.error('Error fetching disease categories:', error);
+                messageContainer.textContent = 'Failed to fetch disease categories. Please check the console.';
+                messageContainer.classList.add('error-message');
+            }
+        }
+
+        fetchDiseaseCategories();
+    </script>
+</body>
+</html>

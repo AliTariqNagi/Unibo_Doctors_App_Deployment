@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Image Validation</title>
+    <style>
+        #validation-form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        #image-container {
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        #image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+        #details {
+            margin-top: 10px;
+            text-align: left;
+        }
+        #nextButton {
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        .navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="validation-form">
+        <h2>Validate Image</h2>
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="doctor_name">Doctor Name:</label>
+                <input type="text" id="doctor_name" name="doctor_name" required>
+            </div>
+            <div class="form-group">
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" required>
+            </div>
+            <div class="form-group">
+                <label for="comments">Comments:</label>
+                <textarea id="comments" name="comments"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="disease_name">Disease Name:</label>
+                <input type="text" id="disease_name" name="disease_name" required>
+            </div>
+            <div class="form-group">
+                <label for="file">Upload Image:</label>
+                <input type="file" id="file" name="file" accept="image/*" required>
+            </div>
+            <button type="submit">Submit Validation</button>
+        </form>
+        <button onclick="showImageViewer()">View Validated Images</button>
+    </div>
+
+    <div id="image-container" style="display: none;">
+        <h2>View Images</h2>
+        <img id="image" src="" alt="Doctor Image">
+        <div id="details">
+            <p><strong>Doctor Name:</strong> <span id="doctorName"></span></p>
+            <p><strong>Rating:</strong> <span id="rating-display"></span></p>
+            <p><strong>Comments:</strong> <span id="comments-display"></span></p>
+            <p><strong>Disease Name:</strong> <span id="diseaseName-display"></span></p>
+        </div>
+        <div class="navigation">
+            <button id="nextButton">Next</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+
+            try {
+                const response = await fetch('http://localhost:8000/validate_image/', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    alert('Image validated and submitted successfully!');
+                    document.getElementById('uploadForm').reset(); // Clear the form
+                    // Optionally, you can redirect or show a success message
+                } else {
+                    const error = await response.json();
+                    console.error('Error submitting validation:', error);
+                    alert('Failed to submit validation.');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('Network error occurred.');
+            }
+        });
+
+        // Initially hide the image viewing section and show the form
+        document.getElementById('image-container').style.display = 'none';
+
+        // You might want a button to switch between the validation form and image viewing
+        // For simplicity, I'm initially showing only the form.
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Image Validation</title>
+    <style>
+        #image-container {
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        #image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+        #details {
+            margin-top: 10px;
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container">
+        <img id="image" src="" alt="Doctor Image">
+        <div id="details">
+            <p><strong>Doctor Name:</strong> <span id="doctorName"></span></p>
+            <p><strong>Rating:</strong> <span id="rating"></span></p>
+            <p><strong>Comments:</strong> <span id="comments"></span></p>
+            <p><strong>Disease Name:</strong> <span id="diseaseName"></span></p>
+        </div>
+        <button id="nextButton">Next</button>
+        </div>
+
+        <script src="script.js"></script>
+</body>
+</html>

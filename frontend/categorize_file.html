@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Export Doctor Validations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    #downloadBtn {
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #downloadBtn:hover {
+      background-color: #1c5980;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Download Doctor Image Validations</h1>
+  <button id="downloadBtn">Download Excel File</button>
+
+  <script>
+    const backendUrl = 'http://127.0.0.1:8000';
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = `${backendUrl}/skin_disease_image/export_excel`;
+      link.download = 'doctor_validations.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  </script>
+
+</body>
+</html>

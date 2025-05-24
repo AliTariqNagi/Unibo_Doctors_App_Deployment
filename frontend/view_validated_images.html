@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View/Edit Validated Images</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .validated-image-list {
+            list-style: none;
+            padding: 0;
+            width: 80%;
+        }
+        .validated-image-item {
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            padding: 10px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .validated-image-item img {
+            max-width: 200px;
+            height: auto;
+        }
+        .image-details {
+            flex-grow: 1;
+        }
+        .edit-button, .delete-button {
+            padding: 8px 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .edit-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .home-button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            width: 100px;
+        }
+        .home-button:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>View/Edit Validated Images</h1>
+    <ul class="validated-image-list" id="validatedImageList">
+        </ul>
+    <a href="/" class="home-button">Home</a>
+
+    <script>
+        // In a real application, you would fetch the list of validated images
+        // from your backend and dynamically populate the 'validatedImageList' element.
+        fetch('/api/validated_images') // Replace with your actual API endpoint
+            .then(response => response.json())
+            .then(data => {
+                const validatedImageList = document.getElementById('validatedImageList');
+                data.forEach(image => {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('validated-image-item');
+                    listItem.innerHTML = `
+                        <img src="${image.image_url || '/placeholder.png'}" alt="${image.diseaseName}" onerror="this.onerror=null;this.src='/placeholder.png';">
+                        <div class="image-details">
+                            <p><strong>Disease:</strong> ${image.diseaseName}</p>
+                            <p><strong>Doctor:</strong> ${image.doctorName}</p>
+                            <p><strong>Rating:</strong> ${image.rating}</p>
+                            <p><strong>Comments:</strong> ${image.comments || 'No comments'}</p>
+                            <button class="edit-button" onclick="editImage(${image.id})">Edit</button>
+                            <button class="delete-button" onclick="deleteImage(${image.id})">Delete</button>
+                        </div>
+                    `;
+                    validatedImageList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error fetching validated images:', error));
+
+        function editImage(imageId) {
+            // Implement logic to navigate to an edit page for this image ID
+            console.log('Edit image with ID:', imageId);
+            window.location.href = `/edit_image/${imageId}`; // Example edit page URL
+        }
+
+        function deleteImage(imageId) {
+            // Implement logic to send a delete request to your backend
+            console.log('Delete image with ID:', imageId);
+            // Example (not functional without backend):
+            /*
+            fetch(`/api/images/${imageId}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Image deleted successfully.');
+                        window.location.reload(); // Reload the page to update the list
+                    } else {
+                        alert('Error deleting image.');
+                    }
+                })
+                .catch(error => console.error('Error deleting image:', error));
+            */
+        }
+    </script>
+</body>
+</html>
